@@ -42,3 +42,4 @@ fn main() {
     println!("H(\"bat\") = {}", h2);
 }
 
+// next step.. building our first block
