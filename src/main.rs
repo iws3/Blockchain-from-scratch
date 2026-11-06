@@ -25,21 +25,71 @@
 //     println!("Hello, {}! You have called this program {} times.", name, counter);
 // }
 
-use sha2::{Sha256, Digest};
+// BASICS OF HASHING.......
 
-fn hash_string(input:&str)->String {
-    let mut hasher=Sha256::new();
-    hasher.update(input.as_bytes());
-    let result=hasher.finalize();
-    hex::encode(result)
+// use sha2::{Sha256, Digest};
+
+// fn hash_string(input:&str)->String {
+//     let mut hasher=Sha256::new();
+//     hasher.update(input.as_bytes());
+//     let result=hasher.finalize();
+//     hex::encode(result)
+// }
+
+// fn main() {
+//     let h1 = hash_string("cat");
+//     let h2 = hash_string("bat");
+
+//     println!("H(\"cat\") = {}", h1);
+//     println!("H(\"bat\") = {}", h2);
+// }
+
+// next step.. building our first block
+
+
+use sha2::{Sha256, Digest};
+use chrono::Utc;
+
+struct Block {
+    index: u64,
+    timestamp: i64,
+    data: String,
+    previous_hash: String,
+    hash: String,
+}
+
+impl Block { // Fixed: 'BLock' -> 'Block'
+    fn new(index: u64, data: String, previous_hash: String) -> Block {
+        let timestamp = Utc::now().timestamp();
+        let hash = Block::calculate_hash(index, timestamp, &data, &previous_hash);
+        Block {
+            index,
+            timestamp,
+            data,
+            previous_hash,
+            hash,
+        }
+    }
+
+    fn calculate_hash(index: u64, timestamp: i64, data: &str, previous_hash: &str) -> String {
+        let input = format!("{}{}{}{}", index, timestamp, data, previous_hash);
+        let mut hasher = Sha256::new();
+        hasher.update(input.as_bytes());
+        let result = hasher.finalize();
+        hex::encode(result)
+    }
 }
 
 fn main() {
-    let h1 = hash_string("cat");
-    let h2 = hash_string("bat");
+    let genesis_block = Block::new(
+        0,
+        String::from("Genesis Block"), // Fixed: added comma
+        String::from("0"),
+    ); // Fixed: added semicolon
 
-    println!("H(\"cat\") = {}", h1);
-    println!("H(\"bat\") = {}", h2);
+    println!("Index: {}", genesis_block.index);
+    println!("Timestamp: {}", genesis_block.timestamp);
+    println!("Data: {}", genesis_block.data);
+    println!("Previous Hash: {}", genesis_block.previous_hash);
+    println!("Hash: {}", genesis_block.hash);
 }
-
-// next step.. building our first block
