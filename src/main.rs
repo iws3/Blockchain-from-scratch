@@ -80,6 +80,12 @@ impl Block { // Fixed: 'BLock' -> 'Block'
     }
 }
 
+
+fn print_block(block:&Block) {
+    // Borrow. doesn;t own
+    println!("INdex: {}", block.index)
+}
+
 fn main() {
     let genesis_block = Block::new(
         0,
@@ -87,6 +93,9 @@ fn main() {
         String::from("0"),
     ); // Fixed: added semicolon
 
+    let block=Block::new(0, String::from("data"), String::from("0"));
+     print_block(&block);
+     print_block(&block); 
     println!("Index: {}", genesis_block.index);
     println!("Timestamp: {}", genesis_block.timestamp);
     println!("Data: {}", genesis_block.data);
