@@ -49,6 +49,9 @@
 
 use sha2::{Sha256, Digest};
 use chrono::Utc;
+// let mul chain: Vec<Block>=Vec::new();
+// chain.push()
+// chain.pus()
 
 struct Block {
     index: u64,
@@ -80,6 +83,32 @@ impl Block { // Fixed: 'BLock' -> 'Block'
     }
 }
 
+// FROM BLOCK TO BLOCKCHAIN
+
+struct Blockchain {
+    chain:Vec<Block>,
+}
+
+impl Blockchain {
+    fn new()->Blockchain {
+        let genesis_block=Block::new(0, String::from("Genesis Block"), String::from("0"));
+        Blockchain {
+            chain: vec![genesis_block]
+        }
+    }
+
+    fn latest_block(&self)->&Block {
+        self.chain.last().expect("chain should never be empty")
+    }
+
+    fn add_block(&mut self, data:String) {
+        let previous_hash=self.latest_block().hash.clone();
+        let new_index=self.latest_block().index + 1;
+        let new_block=Block::new(new_index, data, previous_hash);
+        self.chain.push(new_block);
+
+    }
+}
 
 fn print_block(block:&Block) {
     // Borrow. doesn;t own
@@ -94,6 +123,16 @@ fn main() {
     ); // Fixed: added semicolon
 
     let block=Block::new(0, String::from("data"), String::from("0"));
+    let mut blockchain=Blockchain::new();
+    blockchain.add_block(String::from("Alice pays bob 5 coins"));
+    blockchain.add_block(String::from("BOb pays CArol 2 coins"));
+
+    for block in &blockchain.chain {
+        println!(
+            "Block {} | data: {} | hash: {} | prev: {}",
+            block.index, block.data, block.hash, block.previous_hash
+        );
+    }
      print_block(&block);
      print_block(&block); 
     println!("Index: {}", genesis_block.index);
